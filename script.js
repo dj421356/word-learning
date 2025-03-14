@@ -4,12 +4,17 @@ const TOTAL_WORDS = words.length;
 const POINTS_PER_WORD = 10;
 const WINNING_SCORE = TOTAL_WORDS * POINTS_PER_WORD;
 
-const wordImage = document.getElementById('wordImage');
+// 添加随机单词数组
+let randomWords = [];
+
 const playAudio = document.getElementById('playAudio');
 const optionsContainer = document.querySelector('.options-container');
 const feedback = document.getElementById('feedback');
 const nextButton = document.getElementById('nextWord');
 const scoreElement = document.getElementById('score');
+
+// 添加进度显示元素
+let progressElement = null;
 
 // 音频缓存
 const audioCache = new Map();
@@ -66,9 +71,7 @@ logoutBtn.addEventListener('click', () => {
     firebase.auth().signOut()
         .then(() => {
             // 重置本地数据
-            currentWordIndex = 0;
-            score = 0;
-            scoreElement.textContent = '0';
+            initializeRandomWords();
             loadWord();
         })
         .catch(error => {
@@ -79,21 +82,29 @@ logoutBtn.addEventListener('click', () => {
 
 // 加载用户数据
 function loadUserData(userId) {
+    if (!words || words.length === 0) {
+        console.error('单词数据未加载');
+        return;
+    }
     const userRef = firebase.database().ref(`users/${userId}`);
     userRef.once('value')
         .then(snapshot => {
             const data = snapshot.val();
             if (data) {
+                randomWords = shuffleArray([...words]);
                 currentWordIndex = data.currentWordIndex || 0;
                 score = data.score || 0;
                 scoreElement.textContent = score;
                 loadWord();
                 updateSyncStatus('数据已同步');
+            } else {
+                initializeRandomWords();
             }
         })
         .catch(error => {
             console.error('加载数据失败:', error);
             updateSyncStatus('同步失败');
+            initializeRandomWords();
         });
 }
 
@@ -158,11 +169,13 @@ function playSound(audio) {
     audio.addEventListener('ended', unlockAudio);
     audio.addEventListener('error', unlockAudio);
     
-    audio.play()
-        .catch(error => {
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
             console.error('音频播放失败:', error);
             unlockAudio();
         });
+    }
 }
 
 function shuffleArray(array) {
@@ -173,8 +186,32 @@ function shuffleArray(array) {
     return array;
 }
 
+// 更新进度显示
+function updateProgress() {
+    progressElement.textContent = `第 ${currentWordIndex + 1} 题 / 共 ${TOTAL_WORDS} 题`;
+}
+
+// 修改初始化函数
+function initializeRandomWords() {
+    if (!words || words.length === 0) {
+        console.error('单词数据未加载');
+        return;
+    }
+    try {
+        console.log('初始化随机单词，总数:', words.length);
+        randomWords = shuffleArray([...words]);
+        currentWordIndex = 0;
+        score = 0;
+        scoreElement.textContent = score;
+        updateProgress();
+        loadWord();
+    } catch (error) {
+        console.error('初始化失败:', error);
+    }
+}
+
 function playWordAudio() {
-    const audio = preloadAudio(words[currentWordIndex].audio);
+    const audio = preloadAudio(randomWords[currentWordIndex].audio);
     playSound(audio);
 }
 
@@ -185,9 +222,15 @@ function showFeedback(isCorrect) {
 }
 
 function showVictoryMessage() {
-    feedback.textContent = '🎉 恭喜你完成所有单词学习！你太棒了！🎉';
-    feedback.style.color = '#2196F3';
-    playSound(VICTORY_SOUND);
+    if (score >= WINNING_SCORE) {
+        feedback.textContent = '🎉 恭喜你完成所有单词学习！你太棒了！🎉';
+        feedback.style.color = '#2196F3';
+        playSound(VICTORY_SOUND);
+    } else {
+        const wrongCount = TOTAL_WORDS - (score / POINTS_PER_WORD);
+        feedback.textContent = `继续加油！你答错了 ${wrongCount} 个单词，再接再厉！💪`;
+        feedback.style.color = '#FF9800';
+    }
     
     // 隐藏下一个按钮，因为已经完成所有单词
     nextButton.style.display = 'none';
@@ -204,11 +247,11 @@ function showVictoryMessage() {
     restartButton.className = 'next-button';
     restartButton.style.marginTop = '20px';
     restartButton.onclick = () => {
-        currentWordIndex = 0;
-        score = 0;
-        scoreElement.textContent = score;
+        initializeRandomWords();
         loadWord();
         restartButton.remove();
+        // 保存进度
+        saveUserData();
     };
     feedback.parentNode.insertBefore(restartButton, feedback.nextSibling);
 }
@@ -217,10 +260,6 @@ function updateScore(isCorrect) {
     if (isCorrect) {
         score += POINTS_PER_WORD;
         scoreElement.textContent = score;
-        
-        if (score >= WINNING_SCORE) {
-            showVictoryMessage();
-        }
         // 保存进度
         saveUserData();
     }
@@ -228,7 +267,12 @@ function updateScore(isCorrect) {
 
 function handleOptionClick(event) {
     const selectedOption = event.target;
-    const correctWord = words[currentWordIndex].word;
+    if (!randomWords || !randomWords[currentWordIndex]) {
+        console.error('单词数据未正确加载');
+        return;
+    }
+    
+    const correctWord = randomWords[currentWordIndex].word;
     const isCorrect = selectedOption.textContent === correctWord;
 
     // 禁用所有选项
@@ -245,14 +289,31 @@ function handleOptionClick(event) {
     showFeedback(isCorrect);
     updateScore(isCorrect);
     
-    // 只有在未达到胜利分数时才显示下一个按钮
-    if (score < WINNING_SCORE) {
+    // 检查是否是最后一题
+    if (currentWordIndex === TOTAL_WORDS - 1) {
+        showVictoryMessage();
+    } else {
+        // 只有在未达到胜利分数时才显示下一个按钮
         nextButton.style.display = 'block';
     }
 }
 
+function handleAudioPlay(e) {
+    if (e) {
+        e.preventDefault(); // 阻止默认行为
+        e.stopPropagation(); // 阻止事件冒泡
+    }
+    playWordAudio();
+}
+
 function loadWord() {
-    const currentWord = words[currentWordIndex];
+    if (!randomWords || !randomWords[currentWordIndex]) {
+        console.error('单词数据未正确加载');
+        return;
+    }
+    
+    const currentWord = randomWords[currentWordIndex];
+    console.log('加载单词:', currentWord);
     
     // 重置界面
     feedback.textContent = '';
@@ -272,17 +333,19 @@ function loadWord() {
         button.className = 'option';
         button.disabled = false;
     });
-}
 
-function handleAudioPlay(e) {
-    e.preventDefault(); // 阻止默认行为
-    e.stopPropagation(); // 阻止事件冒泡
-    playWordAudio();
+    // 更新进度显示
+    updateProgress();
+
+    // 自动播放当前单词音频
+    setTimeout(() => {
+        handleAudioPlay();
+    }, 500);
 }
 
 // 移除旧的事件监听器
-wordImage.removeEventListener('click', playWordAudio);
-playAudio.removeEventListener('click', playWordAudio);
+wordImage.removeEventListener('click', handleAudioPlay);
+playAudio.removeEventListener('click', handleAudioPlay);
 
 // 添加新的事件监听器
 wordImage.addEventListener('click', handleAudioPlay);
@@ -324,7 +387,7 @@ function addTouchSupport() {
     // 为图片添加触摸反馈
     wordImage.addEventListener('touchstart', function(e) {
         this.style.transform = 'scale(0.98)';
-        playWordAudio();
+        handleAudioPlay();
     });
 
     wordImage.addEventListener('touchend', function() {
@@ -341,9 +404,53 @@ nextButton.addEventListener('click', () => {
     }
 });
 
-// 初始化
-loadWord();
-addTouchSupport();
+// 等待 DOM 加载完成
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM 加载完成');
+    console.log('words 数组:', words);
+    
+    // 检查 words 数组是否已加载
+    if (!words || words.length === 0) {
+        console.error('单词数据未加载，请确保 words.js 文件已正确引入');
+        return;
+    }
+
+    // 获取所有必需的元素
+    const wordCard = document.querySelector('.word-card');
+    const wordImage = document.getElementById('wordImage');
+    
+    if (!wordCard || !wordImage) {
+        console.error('必需的 DOM 元素未找到');
+        return;
+    }
+    
+    console.log('找到所有必需的 DOM 元素');
+    
+    // 插入进度显示元素
+    try {
+        // 先移除可能存在的旧进度元素
+        const oldProgress = wordCard.querySelector('.progress');
+        if (oldProgress) {
+            oldProgress.remove();
+        }
+        
+        // 创建新的进度元素
+        progressElement = document.createElement('div');
+        progressElement.className = 'progress';
+        progressElement.style.cssText = 'text-align: center; margin-bottom: 10px; color: #666;';
+        
+        // 使用 appendChild 而不是 insertBefore
+        wordCard.insertAdjacentElement('afterbegin', progressElement);
+        console.log('进度显示元素插入成功');
+    } catch (error) {
+        console.error('插入进度显示元素失败:', error);
+        return;
+    }
+    
+    // 初始化
+    initializeRandomWords();
+    addTouchSupport();
+});
 
 // 添加视觉反馈的样式
 const style = document.createElement('style');
