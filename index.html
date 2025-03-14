@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>趣味单词学习</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="user-panel">
+            <div id="userStatus" class="user-status">
+                <button id="loginBtn" class="auth-button">登录/注册</button>
+                <span id="userInfo" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="auth-button">退出</button>
+                </span>
+            </div>
+            <div class="sync-status" id="syncStatus"></div>
+        </div>
+        <div class="word-card">
+            <div class="score">得分: <span id="score">0</span></div>
+            <div class="image-container">
+                <img id="wordImage" src="" alt="单词图片" />
+                <button id="playAudio" class="play-button">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="options-container">
+                <button class="option"></button>
+                <button class="option"></button>
+                <button class="option"></button>
+                <button class="option"></button>
+            </div>
+            <div id="feedback" class="feedback"></div>
+            <button id="nextWord" class="next-button">下一个</button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="words.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
