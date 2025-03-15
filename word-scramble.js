@@ -135,6 +135,7 @@ function loadScrambleWord() {
         letterElement.draggable = true;
         letterElement.textContent = letter;
         
+        // 添加拖拽事件
         letterElement.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', letter);
             e.dataTransfer.effectAllowed = 'move';
@@ -146,6 +147,138 @@ function loadScrambleWord() {
             if (e.dataTransfer.dropEffect === 'move') {
                 letterElement.remove();
             }
+        });
+
+        // 添加触摸事件
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isDragging = false;
+
+        letterElement.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isDragging = true;
+            letterElement.classList.add('dragging');
+            e.preventDefault(); // 防止页面滚动
+        });
+
+        letterElement.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            
+            // 计算移动距离
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+            
+            // 更新字母位置
+            letterElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            e.preventDefault(); // 防止页面滚动
+        });
+
+        letterElement.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            letterElement.classList.remove('dragging');
+            letterElement.style.transform = '';
+            
+            // 获取触摸结束位置
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            // 检查是否拖到了答案区域
+            const answerRect = scrambleAnswer.getBoundingClientRect();
+            if (touchEndX >= answerRect.left && 
+                touchEndX <= answerRect.right && 
+                touchEndY >= answerRect.top && 
+                touchEndY <= answerRect.bottom) {
+                
+                // 创建答案字母
+                const answerLetter = document.createElement('div');
+                answerLetter.className = 'scramble-answer-letter';
+                answerLetter.textContent = letter;
+                
+                // 添加点击事件移除字母
+                answerLetter.addEventListener('click', () => {
+                    const newLetterElement = document.createElement('div');
+                    newLetterElement.className = 'scramble-letter';
+                    newLetterElement.draggable = true;
+                    newLetterElement.textContent = letter;
+                    
+                    // 复制所有事件监听器
+                    newLetterElement.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', letter);
+                        e.dataTransfer.effectAllowed = 'move';
+                        newLetterElement.classList.add('dragging');
+                    });
+                    
+                    newLetterElement.addEventListener('dragend', (e) => {
+                        newLetterElement.classList.remove('dragging');
+                        if (e.dataTransfer.dropEffect === 'move') {
+                            newLetterElement.remove();
+                        }
+                    });
+
+                    // 复制触摸事件
+                    newLetterElement.addEventListener('touchstart', (e) => {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                        isDragging = true;
+                        newLetterElement.classList.add('dragging');
+                        e.preventDefault();
+                    });
+
+                    newLetterElement.addEventListener('touchmove', (e) => {
+                        if (!isDragging) return;
+                        
+                        const touchX = e.touches[0].clientX;
+                        const touchY = e.touches[0].clientY;
+                        
+                        const deltaX = touchX - touchStartX;
+                        const deltaY = touchY - touchStartY;
+                        
+                        newLetterElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        e.preventDefault();
+                    });
+
+                    newLetterElement.addEventListener('touchend', (e) => {
+                        if (!isDragging) return;
+                        
+                        isDragging = false;
+                        newLetterElement.classList.remove('dragging');
+                        newLetterElement.style.transform = '';
+                        
+                        const touchEndX = e.changedTouches[0].clientX;
+                        const touchEndY = e.changedTouches[0].clientY;
+                        
+                        const answerRect = scrambleAnswer.getBoundingClientRect();
+                        if (touchEndX >= answerRect.left && 
+                            touchEndX <= answerRect.right && 
+                            touchEndY >= answerRect.top && 
+                            touchEndY <= answerRect.bottom) {
+                            
+                            const newAnswerLetter = document.createElement('div');
+                            newAnswerLetter.className = 'scramble-answer-letter';
+                            newAnswerLetter.textContent = letter;
+                            scrambleAnswer.appendChild(newAnswerLetter);
+                            newLetterElement.remove();
+                            checkScrambleAnswer();
+                        }
+                    });
+                    
+                    scrambleLetters.appendChild(newLetterElement);
+                    answerLetter.remove();
+                    checkScrambleAnswer();
+                });
+                
+                scrambleAnswer.appendChild(answerLetter);
+                letterElement.remove();
+                checkScrambleAnswer();
+            }
+            
+            e.preventDefault(); // 防止页面滚动
         });
         
         scrambleLetters.appendChild(letterElement);
