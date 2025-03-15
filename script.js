@@ -204,7 +204,14 @@ function initializeRandomWords() {
         score = 0;
         scoreElement.textContent = score;
         updateProgress();
-        loadWord();
+        
+        // 先加载第一个单词的界面
+        loadWord(false);
+        
+        // 延迟播放音频
+        setTimeout(() => {
+            playWordAudio();
+        }, 1500);
     } catch (error) {
         console.error('初始化失败:', error);
     }
@@ -306,7 +313,7 @@ function handleAudioPlay(e) {
     playWordAudio();
 }
 
-function loadWord() {
+function loadWord(shouldPlayAudio = true) {
     if (!randomWords || !randomWords[currentWordIndex]) {
         console.error('单词数据未正确加载');
         return;
@@ -337,10 +344,12 @@ function loadWord() {
     // 更新进度显示
     updateProgress();
 
-    // 自动播放当前单词音频
-    setTimeout(() => {
-        handleAudioPlay();
-    }, 500);
+    // 只在需要时自动播放音频
+    if (shouldPlayAudio) {
+        setTimeout(() => {
+            playWordAudio();
+        }, 500);
+    }
 }
 
 // 移除旧的事件监听器
@@ -450,6 +459,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化
     initializeRandomWords();
     addTouchSupport();
+
+    // 标签页切换逻辑
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // 移除所有活动状态
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // 添加当前标签的活动状态
+            button.classList.add('active');
+            const tabId = button.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+
+            // 如果切换到拼写游戏，重新初始化游戏
+            if (tabId === 'word-scramble') {
+                initializeScrambleGame();
+            }
+        });
+    });
 });
 
 // 添加视觉反馈的样式

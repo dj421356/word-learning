@@ -18,24 +18,46 @@
             </div>
             <div class="sync-status" id="syncStatus"></div>
         </div>
-        <div class="word-card">
-            <div class="score">得分: <span id="score">0</span></div>
-            <div class="image-container">
-                <img id="wordImage" src="" alt="单词图片" />
-                <button id="playAudio" class="play-button">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </button>
+
+        <!-- 标签页导航 -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="word-choice">单词选择</button>
+            <button class="tab-button" data-tab="word-scramble">单词拼写</button>
+        </div>
+
+        <!-- 单词选择游戏 -->
+        <div class="tab-content active" id="word-choice-tab">
+            <div class="word-card">
+                <div class="score">得分: <span id="score">0</span></div>
+                <div class="image-container">
+                    <img id="wordImage" src="" alt="单词图片" />
+                    <button id="playAudio" class="play-button">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="options-container">
+                    <button class="option"></button>
+                    <button class="option"></button>
+                    <button class="option"></button>
+                    <button class="option"></button>
+                </div>
+                <div id="feedback" class="feedback"></div>
+                <button id="nextWord" class="next-button">下一个</button>
             </div>
-            <div class="options-container">
-                <button class="option"></button>
-                <button class="option"></button>
-                <button class="option"></button>
-                <button class="option"></button>
+        </div>
+
+        <!-- 单词拼写游戏 -->
+        <div class="tab-content" id="word-scramble-tab">
+            <div id="scrambleContainer" class="scramble-container">
+                <h2>单词拼写游戏</h2>
+                <div class="scramble-score">得分: <span id="scrambleScore">0</span></div>
+                <div id="scrambleLetters" class="scramble-letters"></div>
+                <div id="scrambleAnswer" class="scramble-answer"></div>
+                <div id="scrambleFeedback" class="scramble-feedback"></div>
+                <button id="scrambleNextButton" class="scramble-next-button">下一个</button>
             </div>
-            <div id="feedback" class="feedback"></div>
-            <button id="nextWord" class="next-button">下一个</button>
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -45,5 +67,6 @@
     <script src="firebase-config.js"></script>
     <script src="words.js"></script>
     <script src="script.js"></script>
+    <script src="word-scramble.js"></script>
 </body>
 </html> 
