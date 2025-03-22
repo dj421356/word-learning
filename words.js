@@ -1,15 +1,15 @@
 const words = [
     {
-        word: 'pencil',
-        image: 'https://plus.unsplash.com/premium_photo-1670958553973-58e2ef388f91?q=80&w=2672&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/ukp/ukpee/ukpeewe023.mp3',
-        options: ['pencil', 'pen', 'ruler', 'book']
+        word: 'clock',
+        image: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?q=80&w=3840&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/ukc/ukcli/ukclipp014.mp3',
+        options: ['clock', 'pen', 'ruler', 'book']
     },
     {
-        word: 'teacher',
-        image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/ukt/uktaw/uktawny023.mp3',
-        options: ['teacher', 'student', 'doctor', 'parent']
+        word: 'mirror',
+        image: 'https://images.unsplash.com/photo-1630086444439-97f3e422cc13?q=80&w=4511&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/us_pron/m/mir/mirro/mirror.mp3',
+        options: ['mirror', 'student', 'doctor', 'parent']
     },
     {
         word: 'classroom',
@@ -18,10 +18,10 @@ const words = [
         options: ['classroom', 'bathroom', 'bedroom', 'kitchen']
     },
     {
-        word: 'friend',
-        image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/ukf/ukfri/ukfrica007.mp3',
-        options: ['friend', 'family', 'teacher', 'stranger']
+        word: 'lamp',
+        image: 'https://images.unsplash.com/photo-1555488205-d5e67846cf40?q=80&w=3970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/us_pron/l/lam/lamp_/lamp.mp3',
+        options: ['lamp', 'family', 'teacher', 'stranger']
     },
     {
         word: 'computer',
@@ -30,10 +30,10 @@ const words = [
         options: ['computer', 'phone', 'tablet', 'television']
     },
     {
-        word: 'school',
-        image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/uks/uksch/ukschol005.mp3',
-        options: ['school', 'hospital', 'park', 'library']
+        word: 'bed',
+        image: 'https://images.unsplash.com/photo-1582582621959-48d27397dc69?q=80&w=4469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/us_pron/b/bed/bed__/bed.mp3',
+        options: ['bed', 'hospital', 'park', 'library']
     },
     {
         word: 'family',
@@ -48,15 +48,15 @@ const words = [
         options: ['book', 'notebook', 'pencil', 'bag']
     },
     {
-        word: 'bag',
-        image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/ukb/ukbag/ukbag__001.mp3',
-        options: ['bag', 'box', 'desk', 'chair']
+        word: 'boat',
+        image: 'https://images.unsplash.com/photo-1552353617-3bfd679b3bdd?q=80&w=4470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/us_pron/b/boa/boat_/boat.mp3',
+        options: ['boat', 'box', 'desk', 'chair']
     },
     {
-        word: 'student',
-        image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45',
-        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/uk_pron/u/uks/ukstu/ukstubb010.mp3',
-        options: ['student', 'teacher', 'parent', 'doctor']
+        word: 'apple',
+        image: 'https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?q=80&w=4470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        audio: 'https://dictionary.cambridge.org/media/english-chinese-traditional/us_pron/a/app/apple/apple.mp3',
+        options: ['apple', 'banana', 'grape', 'orange']
     }
 ]; 
